@@ -1,5 +1,5 @@
 import express from"express";import cors from"cors";import Database from"better-sqlite3";import jwt from"jsonwebtoken";
-const app=express(),db=new Database("valhalla.db"),PORT=3001,SECRET=process.env.JWT_SECRET||"TROQUE-ESTA-CHAVE-EM-PRODUCAO";
+const app=express(),db=new Database("valhalla.db"),PORT=process.env.PORT||3001,SECRET=process.env.JWT_SECRET||"TROQUE-ESTA-CHAVE-EM-PRODUCAO";
 app.use(cors());app.use(express.json());
 db.exec(`CREATE TABLE IF NOT EXISTS clients(id INTEGER PRIMARY KEY AUTOINCREMENT,name TEXT NOT NULL,phone TEXT NOT NULL,email TEXT,notes TEXT,created_at TEXT DEFAULT CURRENT_TIMESTAMP);
 CREATE TABLE IF NOT EXISTS services(id INTEGER PRIMARY KEY AUTOINCREMENT,name TEXT NOT NULL,description TEXT,price REAL DEFAULT 0,duration INTEGER DEFAULT 30,active INTEGER DEFAULT 1);
