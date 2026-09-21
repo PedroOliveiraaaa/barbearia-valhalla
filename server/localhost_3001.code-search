@@ -1,0 +1,9 @@
+# Query: localhost:3001
+# ContextLines: 1
+
+1 result - 1 file
+
+barbearia-valhalla-completa\client\src\main.tsx:
+  1  import React,{useEffect,useState}from"react";import{createRoot}from"react-dom/client";import{CalendarDays,Clock,MapPin,Menu,MessageCircle,Scissors,Shield,Star,X,LogOut,Plus,Trash2,Edit3}from"lucide-react";import"./style.css";
+  2: const API="/api",WA="5511968315999";
+  3  type Service={id:number;name:string;description:string;price:number;duration:number;active:number};type Barber={id:number;name:string;specialty:string;active:number};type Booking={id:number;client_name:string;phone:string;email:string;service_name:string;barber_name:string;date:string;time:string;status:string};

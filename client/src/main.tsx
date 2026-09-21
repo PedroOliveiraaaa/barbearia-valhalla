@@ -29,7 +29,27 @@ function Public(){const[services,setServices]=useState<Service[]>([]),[barbers,s
 function Admin(){const[token,setToken]=useState(localStorage.token||""),[login,setLogin]=useState({email:"admin@valhalla.local",password:"admin123"}),[bookings,setBookings]=useState<Booking[]>([]),[services,setServices]=useState<Service[]>([]),[barbers,setBarbers]=useState<Barber[]>([]),[tab,setTab]=useState("agenda"),[newService,setNewService]=useState({name:"",description:"",price:"",duration:"30"});
  const load=()=>{api("/bookings",{token}).then(setBookings);api("/services").then(setServices);api("/barbers").then(setBarbers)};useEffect(()=>{if(token)load()},[token]);
  if(!token)return <div className="adminLogin"><div className="box"><b className="logo">ᛉ VALHALLA</b><h2>Painel administrativo</h2><input value={login.email} onChange={e=>setLogin({...login,email:e.target.value})}/><input type="password" value={login.password} onChange={e=>setLogin({...login,password:e.target.value})}/><button className="gold" onClick={async()=>{try{let x=await api("/login",{method:"POST",body:JSON.stringify(login)});localStorage.token=x.token;setToken(x.token)}catch{alert("Login inválido")}}}>ENTRAR</button><small>Troque a senha padrão no servidor antes de publicar.</small></div></div>;
- const status=async(id:number,s:string)=>{await api(`/bookings/${id}`,{method:"PATCH",token,body:JSON.stringify({status:s})});load()};
- const add=async()=>{await api("/services",{method:"POST",token,body:JSON.stringify({...newService,price:+newService.price,duration:+newService.duration})});setNewService({name:"",description:"",price:"",duration:"30"});load()};
+const status=async(id:number,s:string)=>{
+  try{
+    await api(`/bookings/${id}`,{
+      method:"PATCH",
+      token,
+      body:JSON.stringify({status:s})
+    });
+
+    alert(
+      s==="confirmado"
+        ?"Agendamento confirmado!"
+        :s==="concluido"
+        ?"Agendamento concluído!"
+        :"Agendamento cancelado!"
+    );
+
+    await load();
+  }catch(error){
+    alert("Não foi possível atualizar o agendamento.");
+    console.error(error);
+  }
+}; const add=async()=>{await api("/services",{method:"POST",token,body:JSON.stringify({...newService,price:+newService.price,duration:+newService.duration})});setNewService({name:"",description:"",price:"",duration:"30"});load()};
  return <div className="admin"><aside><b className="logo">ᛉ VALHALLA</b><button onClick={()=>setTab("agenda")}>Agenda</button><button onClick={()=>setTab("servicos")}>Serviços</button><button onClick={()=>setTab("barbeiros")}>Barbeiros</button><button onClick={()=>{localStorage.removeItem("token");setToken("")}}><LogOut/> Sair</button></aside><main><header className="adminHead"><h1>{tab==="agenda"?"Agenda":tab==="servicos"?"Serviços":"Barbeiros"}</h1><span>{bookings.filter(x=>x.status==="pendente").length} pendentes</span></header>{tab==="agenda"&&<div className="adminGrid">{bookings.map(x=><article className="adminCard" key={x.id}><b>#{x.id} · {x.date} às {x.time}</b><h3>{x.client_name}</h3><p>{x.service_name} · {x.barber_name}</p><small>{x.phone} · {x.email}</small><div className="actions"><button onClick={()=>status(x.id,"confirmado")}>Confirmar</button><button onClick={()=>status(x.id,"concluido")}>Concluir</button><button onClick={()=>status(x.id,"cancelado")}>Cancelar</button></div></article>)}</div>}{tab==="servicos"&&<><div className="box form"><input placeholder="Nome" value={newService.name} onChange={e=>setNewService({...newService,name:e.target.value})}/><input placeholder="Descrição" value={newService.description} onChange={e=>setNewService({...newService,description:e.target.value})}/><input placeholder="Preço" type="number" value={newService.price} onChange={e=>setNewService({...newService,price:e.target.value})}/><input placeholder="Duração (min)" type="number" value={newService.duration} onChange={e=>setNewService({...newService,duration:e.target.value})}/><button className="gold" onClick={add}><Plus/> Adicionar serviço</button></div><div className="adminGrid">{services.map(x=><article className="adminCard" key={x.id}><h3>{x.name}</h3><p>{x.description}</p><b>{x.price?`R$ ${x.price}`:"Sem preço"} · {x.duration} min</b></article>)}</div></>}{tab==="barbeiros"&&<div className="adminGrid">{barbers.map(x=><article className="adminCard" key={x.id}><h3>{x.name}</h3><p>{x.specialty}</p></article>)}</div>}</main></div>}
 function App(){return location.pathname.startsWith("/admin")?<Admin/>:<Public/>}createRoot(document.getElementById("root")!).render(<App/>);
