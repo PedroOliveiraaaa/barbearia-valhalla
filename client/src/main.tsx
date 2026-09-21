@@ -1,5 +1,5 @@
 import React,{useEffect,useState}from"react";import{createRoot}from"react-dom/client";import{CalendarDays,Clock,MapPin,Menu,MessageCircle,Scissors,Shield,Star,X,LogOut,Plus,Trash2,Edit3}from"lucide-react";import"./style.css";
-const API="http://localhost:3001/api",WA="5511968315999";
+const API="/api",WA="5511968315999";
 type Service={id:number;name:string;description:string;price:number;duration:number;active:number};type Barber={id:number;name:string;specialty:string;active:number};type Booking={id:number;client_name:string;phone:string;email:string;service_name:string;barber_name:string;date:string;time:string;status:string};
 async function api(path:string,opt:any={}){let r=await fetch(API+path,{headers:{"Content-Type":"application/json",...(opt.token?{Authorization:"Bearer "+opt.token}:{})},...opt});if(!r.ok)throw Error(await r.text());return r.json()}
 const initialServices=["Corte de cabelo","Aparar a barba","Barbear com toalha quente","Corte militar","Barbearia Vintage","Cortes infantis"];
